@@ -88,6 +88,69 @@ Route::post('users', function()
 });
 
 	Route::get('users/{id}/edit', function($id){
+
+		$oUser = User::find($id);
+
+		return View::make("editUserForm")->with("user", $oUser);
+
+		//to make sticky data, bind the data to the form. Get id, load the model, bind it and then echo out the values
 		
+	});
+
+	Route::put('users/{id}', function($id){
+
+		$aRules = array(
+			'firstname' => 'required',
+			'lastname' => 'required',
+			'email' => 'required|email|unique:users,email,'.$id //last parameter here is the exception (db table field and user id), since if they didn't update email validation will think it's not unique and freak out
+			);
+
+		//validate data
+		$oValidator = Validator::make(Input::all(),$aRules);
+
+		if($oValidator->passes()){
+			//update user detail
+			$oUser = User::find($id);
+			$oUser->fill(Input::all()); //instead of setting each property separately. This uses the fillable we made already
+			$oUser->save();
+			
+			//redirect to user page
+			return Redirect::to("users/".$id);			
+
+
+		}else{
+			//redirect to editUserForm with sticky input and errors
+			return Redirect::to('users/'.$id.'/edit')->withErrors($oValidator)->withInput();
+		}
+
+
+	});
+
+	Route::get('login', function()
+	{
+		return View::make("loginForm");
+
+
+	});
+
+	Route::post('login', function()
+	{
+		$aLoginDetails = array(
+			'username' => Input::get('username'),
+			'password' => Input::get('password')
+			);
+
+		if(Auth::attempt($aLoginDetails)){
+			//redirect to home page
+			return Redirect::intended("users/".Auth::user()->id); //this redirects to home page as a fallback, but ideally (using intended) should redirect back to the page they were on before logging in
+
+		}else{
+			//send back to login page with errors
+			return Redirect::to("login")->with("error","Try again"); //this width is not binding data (it is not on view) it is creating flash data on the redirect, sending info to the session for use in the next request
+
+		}
+		
+
+
 	});
 
