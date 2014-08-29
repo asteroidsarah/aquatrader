@@ -13,7 +13,16 @@
 
 App::before(function($request)
 {
-	//
+	//if there's no cart in the session, create one pls
+
+	if(!Session::has("cart")){
+		//create cart and store to session
+		$oCart = new Cart();
+		// $oCart->addToCart(1,3); //3x item 1 //testing
+		// $oCart->addToCart(3,2); //2x item 3 //testing
+		Session::put("cart",$oCart);
+	}
+
 });
 
 

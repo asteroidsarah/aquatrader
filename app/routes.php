@@ -85,7 +85,7 @@ Route::post('users', function()
 
 		return View::make("userDetails")->with("user",$oUser); //binding the oUser of the passed in id into the view under that first parameter, "user"
 
-});
+})->before("auth"); //applying filter
 
 	Route::get('users/{id}/edit', function($id){
 
@@ -151,6 +151,26 @@ Route::post('users', function()
 		}
 		
 
+
+	});
+
+	Route::get('logout', function()
+	{
+		Auth::logout();
+		return Redirect::to('types/1');
+	});
+
+	Route::post('orderlines', function()
+	{
+		//Get the product id
+		$iProductID = Input::get("productID");
+
+		//add product id to shopping cart
+		Session::get("cart")->addToCart(Input::get("productID"),1); //this second parameter is because the original cart code let you choose how many to add
+
+		//redirect back to the type page
+		$oProduct = Product::find($iProductID); //load the product so we can then find its type id
+		return Redirect::to("types/".$oProduct->type_id);
 
 	});
 

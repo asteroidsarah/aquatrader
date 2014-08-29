@@ -15,6 +15,7 @@ define('LARAVEL_START', microtime(true));
 */
 
 require __DIR__.'/../vendor/autoload.php';
+require __DIR__.'/../app/models/Cart.php'; //include cart definition into the system before other things. Remember this when adding things from outside the framework into your system
 
 /*
 |--------------------------------------------------------------------------

@@ -53,9 +53,14 @@
 					<li><a href="{{URL::to('types/'.$type->id)}}">{{$type->name}}</a></li>
 				@endforeach
 
-					<li class="clear"><a href="">Account <i class="icon-user"></i></a></li>
-					<li><a href="">Login <i class="icon-lock"></i></a></li>
-					<li><a href="" >2 items <i class="icon-shopping-cart"></i></a></li>
+					
+					@if(Auth::guest()) <!-- checking whether there is a user in the session or not. returns true if no current user in session (ie. yes, there is a guest) or false -->
+					<li><a href="{{URL::to('login')}}">Login <i class="icon-lock"></i></a></li>
+					@else <!-- if they are logged in -->
+					<li class="clear"><a href="{{URL::to('users/'.Auth::user()->id)}}">Account <i class="icon-user"></i></a></li>
+					<li><a href="{{URL::to('logout')}}">Logout <i class="icon-lock"></i></a></li>
+					@endif
+					<li><a href="" >{{array_sum(Session::get('cart')->contents)}} items <i class="icon-shopping-cart"></i></a></li>
 				</ul>
 			</nav>
 		</header>

@@ -7,7 +7,10 @@
 				<h4>{{$product->name}}</h4>
 				<p>{{$product->description}}</p>
 				<span class="price"><i class="icon-dollar"></i>{{$product->price}}</span>
-				<span class="addtocart"><i class="icon-plus"></i></span>
+				{{Form::open(array('url'=>'orderlines'))}}
+				{{Form::hidden("productID",$product->id)}} <!-- key and value pair -->
+				<button class="addtocart"><i class="icon-plus"></i></button>
+				{{Form::close()}}
 			</article>
 		@endforeach
 			
