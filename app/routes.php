@@ -174,3 +174,34 @@ Route::post('users', function()
 
 	});
 
+	Route::get('cart', function()
+	{
+		return View::make('cart')->with('cart', Session::get('cart')); //second part is binding cart object from the session to the View
+
+		//now that we have access to the cart, we can loop through cart contents and dynamically generate their info in cart.blade.php
+
+
+	});
+
+	Route::post('orders', function()
+	{
+		//Create new order
+		$oOrder = new Order();
+		$oOrder->status = "Pending";
+		$oOrder->user_id = Auth::user()->id; //this id coming from the authentication (this is where we know which user we are dealing with)
+		$oOrder->save();
+
+		//add orderlines. This is a junction table we need to insert into
+		foreach(Session::get('cart')->contents as $productID=>$quantity){
+			$oOrder->products()->attach($productID, array('quantity'=> $quantity)); //adds 4 of product 2 into the junction table
+		}
+
+		Session::put("cart", new Cart()); //empty the old cart after checkout
+
+		//save the order and orderlines to the database
+
+		return Redirect::to('types/1');
+	})->before("auth");
+
+
+

@@ -60,7 +60,7 @@
 					<li class="clear"><a href="{{URL::to('users/'.Auth::user()->id)}}">Account <i class="icon-user"></i></a></li>
 					<li><a href="{{URL::to('logout')}}">Logout <i class="icon-lock"></i></a></li>
 					@endif
-					<li><a href="" >{{array_sum(Session::get('cart')->contents)}} items <i class="icon-shopping-cart"></i></a></li>
+					<li><a href="{{URL::to('cart')}}" >{{array_sum(Session::get('cart')->contents)}} items <i class="icon-shopping-cart"></i></a></li>
 				</ul>
 			</nav>
 		</header>
