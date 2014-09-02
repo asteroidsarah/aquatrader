@@ -46,15 +46,25 @@ Route::filter('auth', function()
 {
 	if (Auth::guest())
 	{
-		if (Request::ajax())
-		{
-			return Response::make('Unauthorized', 401);
+		//manipulate intended url if http methods are not GET.
+		if(Request::server("REQUEST_METHOD") == "GET"){
+		
+			Session::put("url.intended",URL::current());
+		
+		}else{
+			Session::put("url.intended",URL::previous()); //redirect to the URL before the one that uses GET, so the user can submit a POST themselves. In this case, redirect to GET cart
 		}
-		else
-		{
-			return Redirect::guest('login');
-		}
+		
+		return Redirect::guest('login');
 	}
+});
+
+Route::filter('authorisation', function($route, $request, $authorisedID)
+{
+	if(Auth::user()->id != $authorisedID){
+		return Redirect::to('login'); //redirect to the login route if not the authorised person
+	}
+
 });
 
 
