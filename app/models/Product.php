@@ -9,6 +9,8 @@ class Product extends Eloquent{
 	public function orders(){
 		return $this->belongsToMany("Order");
 	}
+
+	protected $fillable = array('name','description','photo', 'price', 'type_id');
 }
 
  ?>

@@ -55,7 +55,7 @@ Route::filter('auth', function()
 			Session::put("url.intended",URL::previous()); //redirect to the URL before the one that uses GET, so the user can submit a POST themselves. In this case, redirect to GET cart
 		}
 		
-		return Redirect::guest('login');
+		return Redirect::to('login');
 	}
 });
 
@@ -106,4 +106,14 @@ Route::filter('csrf', function()
 	{
 		throw new Illuminate\Session\TokenMismatchException;
 	}
+});
+
+
+//Admin filter
+Route::filter('admin', function()
+{
+	if(Auth::user()->admin == 0){
+		return Redirect::to('login');
+	}
+
 });

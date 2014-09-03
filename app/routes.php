@@ -22,15 +22,15 @@
 // // });
 
 // //curly braces part is the dynamic bit. nb the url will for some reason still work if you use type instead of types
-// Route::get('types/{id}', function($id) 
-// {
-// 	// return View::make('hello');
-// 	// return User::all(); //Use this to get the models and print them out. Don't need to write a SQL query! 
-// 	$oType = Type::find($id); //use the type id the user gives you and load it. Need to then pass it over to the view using BINDING
-// 	return View::make("type")->with("type",$oType); //with is the binding part
+Route::get('types/{id}', function($id) 
+{
+	// return View::make('hello');
+	// return User::all(); //Use this to get the models and print them out. Don't need to write a SQL query! 
+	$oType = Type::find($id); //use the type id the user gives you and load it. Need to then pass it over to the view using BINDING
+	return View::make("type")->with("type",$oType); //with is the binding part
 
 
-// });
+});
 
 // Route::get('users/new', function()
 // {
@@ -207,5 +207,45 @@ Route::resource('users', 'UserController');
 		return Redirect::to('types/1');
 	})->before("auth");
 
+	Route::get('products/create', function(){
+
+		$aTypes = Type::lists("name", "id"); //an array of types for the drop down list in the add new product form. type_id=>value but for some reason it's around the other way
+
+		return View::make("newProductForm")->with('types', $aTypes); //data binding
+	})->before("auth|admin");
+
+	Route::post('products', function(){
+
+		//validate input
+		$aRules = array(
+			"name"=>"required|unique:products",
+			"description"=>"required",
+			"price"=>"required|numeric",
+			"photo"=>"required"
+			);
+
+		$oValidator = Validator::make(Input::all(), $aRules);
+
+
+		if($oValidator->passes()){
+
+			//upload photo. Has enctype so is in server already in the temp folder, so need to just copy into the right location. Need to know what new name you want for your file. We are using product name as photo name because we made the name unique. Normally would add a timestamp etc
+			$sNewName = Input::get("name").".".Input::file("photo")->getClientOriginalExtension();
+			Input::file("photo")->move("productphotos", $sNewName);
+
+			//create new product
+			$aDetails = Input::all();
+			$aDetails['photo'] = $sNewName; //since input all only gives text fields, not file fields
+
+			$oProduct = Product::create($aDetails); //using factory pattern (rather than constructor which would need to set each property separately)
+			
+
+			//redirect to product list
+			return Redirect::to("types/".$oProduct->type_id)->withErrors($oValidator)->withInput();
+		}else{
+			//redirect to new product form with errors and sticky data
+		}
+
+	})->before("auth|admin");
 
 
